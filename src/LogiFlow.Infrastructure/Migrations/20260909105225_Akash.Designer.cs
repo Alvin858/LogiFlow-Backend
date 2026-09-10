@@ -4,6 +4,7 @@ using LogiFlow.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LogiFlow.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260909105225_Akash")]
+    partial class Akash
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,54 +111,6 @@ namespace LogiFlow.Infrastructure.Migrations
                     b.ToTable("CustomerAddresses");
                 });
 
-            modelBuilder.Entity("LogiFlow.Domain.Entities.Delivery", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("AssignedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("CompletedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DriverId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FailureReason")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<int>("RouteId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ShipmentId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DriverId");
-
-                    b.HasIndex("RouteId");
-
-                    b.HasIndex("ShipmentId");
-
-                    b.HasIndex("Status");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("Deliveries");
-                });
-
             modelBuilder.Entity("LogiFlow.Domain.Entities.Driver", b =>
                 {
                     b.Property<int>("Id")
@@ -196,46 +151,6 @@ namespace LogiFlow.Infrastructure.Migrations
                         .IsUnique();
 
                     b.ToTable("Drivers");
-                });
-
-            modelBuilder.Entity("LogiFlow.Domain.Entities.ProofOfDelivery", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CapturedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("DeliveryId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PhotoPath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("ReceiverName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("Remarks")
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
-
-                    b.Property<string>("SignaturePath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DeliveryId");
-
-                    b.ToTable("ProofsOfDelivery");
                 });
 
             modelBuilder.Entity("LogiFlow.Domain.Entities.RefreshToken", b =>
@@ -717,17 +632,6 @@ namespace LogiFlow.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("LogiFlow.Domain.Entities.ProofOfDelivery", b =>
-                {
-                    b.HasOne("LogiFlow.Domain.Entities.Delivery", "Delivery")
-                        .WithMany("ProofsOfDelivery")
-                        .HasForeignKey("DeliveryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Delivery");
-                });
-
             modelBuilder.Entity("LogiFlow.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("LogiFlow.Domain.Entities.User", "User")
@@ -821,11 +725,6 @@ namespace LogiFlow.Infrastructure.Migrations
             modelBuilder.Entity("LogiFlow.Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Addresses");
-                });
-
-            modelBuilder.Entity("LogiFlow.Domain.Entities.Delivery", b =>
-                {
-                    b.Navigation("ProofsOfDelivery");
                 });
 
             modelBuilder.Entity("LogiFlow.Domain.Entities.Role", b =>

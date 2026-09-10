@@ -4,7 +4,7 @@ public class Driver
 {
     public int Id { get; set; }
     public int UserId { get; set; }
-    public string LiNumber { get; set; } = string.Empty;
+    public string LicenseNumber { get; set; } = string.Empty;
     public DateTime LicenseExpiryDate { get; set; }
     public int ExperienceYears { get; set; }
     public bool IsAvailable { get; set; } = true;

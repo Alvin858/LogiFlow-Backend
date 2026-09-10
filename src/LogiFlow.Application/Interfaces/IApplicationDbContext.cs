@@ -13,11 +13,15 @@ public interface IApplicationDbContext
     DbSet<Vehicle> Vehicles { get; }
     DbSet<Driver> Drivers { get; }
 
-    DbSet<Route> Routes { get; }
-    DbSet<RouteStop> RouteStops { get; }
-    DbSet<Delivery> Deliveries { get; }
-    DbSet<ProofOfDelivery> ProofsOfDelivery { get; }
-    DbSet<Schedule> Schedules { get; }
+    // Member 2 - Shipment Management
+    DbSet<Shipment> Shipments { get; }
+    DbSet<ShipmentItem> ShipmentItems { get; }
+    DbSet<ShipmentTracking> ShipmentTracking { get; }
 
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+    // Member 2 - Warehouse Management
+    DbSet<Warehouse> Warehouses { get; }
+    DbSet<WarehouseShipment> WarehouseShipments { get; }
+
+    Task<int> SaveChangesAsync(
+        CancellationToken cancellationToken = default);
 }

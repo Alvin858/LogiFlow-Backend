@@ -4,10 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LogiFlow.Infrastructure.Data;
 
-public class ApplicationDbContext(
-    DbContextOptions<ApplicationDbContext> options)
+public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
     : DbContext(options), IApplicationDbContext
 {
+    // =====================================================
+    // Existing Entities
+    // =====================================================
+
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<User> Users => Set<User>();
     public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
@@ -16,20 +19,24 @@ public class ApplicationDbContext(
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
     public DbSet<Driver> Drivers => Set<Driver>();
 
-    // Member 3
-    public DbSet<Route> Routes => Set<Route>();
-    public DbSet<RouteStop> RouteStops => Set<RouteStop>();
-    public DbSet<Delivery> Deliveries => Set<Delivery>();
-    public DbSet<ProofOfDelivery> ProofsOfDelivery => Set<ProofOfDelivery>();
-    public DbSet<Schedule> Schedules => Set<Schedule>();
+    // =====================================================
+    // Member 2 Entities
+    // =====================================================
+
+    public DbSet<Shipment> Shipments => Set<Shipment>();
+    public DbSet<ShipmentItem> ShipmentItems => Set<ShipmentItem>();
+    public DbSet<ShipmentTracking> ShipmentTracking => Set<ShipmentTracking>();
+    public DbSet<Warehouse> Warehouses => Set<Warehouse>();
+    public DbSet<WarehouseShipment> WarehouseShipments => Set<WarehouseShipment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
-        // ==========================================
-        // ROLE
-        // ==========================================
+        // =====================================================
+        // Role
+        // =====================================================
+
         modelBuilder.Entity<Role>(e =>
         {
             e.HasKey(x => x.Id);
@@ -42,9 +49,10 @@ public class ApplicationDbContext(
                 .IsUnique();
         });
 
-        // ==========================================
-        // USER
-        // ==========================================
+        // =====================================================
+        // User
+        // =====================================================
+
         modelBuilder.Entity<User>(e =>
         {
             e.HasKey(x => x.Id);
@@ -73,9 +81,10 @@ public class ApplicationDbContext(
                 .OnDelete(DeleteBehavior.Restrict);
         });
 
-        // ==========================================
-        // REFRESH TOKEN
-        // ==========================================
+        // =====================================================
+        // Refresh Token
+        // =====================================================
+
         modelBuilder.Entity<RefreshToken>(e =>
         {
             e.HasKey(x => x.Id);
@@ -93,9 +102,10 @@ public class ApplicationDbContext(
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // ==========================================
-        // CUSTOMER
-        // ==========================================
+        // =====================================================
+        // Customer
+        // =====================================================
+
         modelBuilder.Entity<Customer>(e =>
         {
             e.HasKey(x => x.Id);
@@ -120,9 +130,10 @@ public class ApplicationDbContext(
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // ==========================================
-        // CUSTOMER ADDRESS
-        // ==========================================
+        // =====================================================
+        // Customer Address
+        // =====================================================
+
         modelBuilder.Entity<CustomerAddress>(e =>
         {
             e.HasKey(x => x.Id);
@@ -150,11 +161,7 @@ public class ApplicationDbContext(
                 .HasMaxLength(100)
                 .IsRequired();
 
-            e.HasIndex(x => new
-            {
-                x.CustomerId,
-                x.IsDefault
-            });
+            e.HasIndex(x => new { x.CustomerId, x.IsDefault });
 
             e.HasOne(x => x.Customer)
                 .WithMany(x => x.Addresses)
@@ -162,9 +169,10 @@ public class ApplicationDbContext(
                 .OnDelete(DeleteBehavior.Cascade);
         });
 
-        // ==========================================
-        // VEHICLE
-        // ==========================================
+        // =====================================================
+        // Vehicle
+        // =====================================================
+
         modelBuilder.Entity<Vehicle>(e =>
         {
             e.HasKey(x => x.Id);
@@ -187,9 +195,10 @@ public class ApplicationDbContext(
                 .HasConversion<int>();
         });
 
-        // ==========================================
-        // DRIVER
-        // ==========================================
+        // =====================================================
+        // Driver
+        // =====================================================
+
         modelBuilder.Entity<Driver>(e =>
         {
             e.HasKey(x => x.Id);
@@ -211,133 +220,192 @@ public class ApplicationDbContext(
         });
 
         // =====================================================
-        // MEMBER 3 - ROUTE
+        // Shipment
         // =====================================================
-        modelBuilder.Entity<Route>(e =>
+
+        modelBuilder.Entity<Shipment>(e =>
         {
             e.HasKey(x => x.Id);
 
-            e.Property(x => x.StartLocation)
-                .HasMaxLength(250)
+            e.HasIndex(x => x.TrackingNumber)
+                .IsUnique();
+
+            e.Property(x => x.TrackingNumber)
+                .HasMaxLength(50)
                 .IsRequired();
 
-            e.Property(x => x.Destination)
-                .HasMaxLength(250)
-                .IsRequired();
-
-            e.Property(x => x.DistanceKm)
-                .HasPrecision(18, 2);
-
-            e.Property(x => x.EstimatedDurationMinutes)
-                .IsRequired();
-
-            e.Property(x => x.Status)
-                .HasConversion<int>();
-
-            e.HasIndex(x => x.Status);
-
-            e.HasMany(x => x.RouteStops)
-                .WithOne(x => x.Route)
-                .HasForeignKey(x => x.RouteId)
-                .OnDelete(DeleteBehavior.Cascade);
-        });
-
-        // =====================================================
-        // MEMBER 3 - ROUTE STOP
-        // =====================================================
-        modelBuilder.Entity<RouteStop>(e =>
-        {
-            e.HasKey(x => x.Id);
-
-            e.Property(x => x.Address)
+            e.Property(x => x.PackageDescription)
                 .HasMaxLength(500)
                 .IsRequired();
 
-            e.Property(x => x.Latitude)
-                .HasPrecision(9, 6);
+            e.Property(x => x.WeightKg)
+                .HasPrecision(18, 2);
 
-            e.Property(x => x.Longitude)
-                .HasPrecision(9, 6);
+            e.Property(x => x.LengthCm)
+                .HasPrecision(18, 2);
 
-            // StopOrder must be unique inside a Route
-            e.HasIndex(x => new
-            {
-                x.RouteId,
-                x.StopOrder
-            }).IsUnique();
-        });
+            e.Property(x => x.WidthCm)
+                .HasPrecision(18, 2);
 
-        // =====================================================
-        // MEMBER 3 - DELIVERY
-        // =====================================================
-        modelBuilder.Entity<Delivery>(e =>
-        {
-            e.HasKey(x => x.Id);
+            e.Property(x => x.HeightCm)
+                .HasPrecision(18, 2);
+
+            e.Property(x => x.Priority)
+                .HasMaxLength(30)
+                .IsRequired();
 
             e.Property(x => x.Status)
-                .HasConversion<int>();
+                .HasMaxLength(50)
+                .IsRequired();
 
-            e.Property(x => x.FailureReason)
-                .HasMaxLength(1000);
+            e.HasOne(x => x.Customer)
+                .WithMany()
+                .HasForeignKey(x => x.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            e.HasIndex(x => x.ShipmentId);
-            e.HasIndex(x => x.DriverId);
-            e.HasIndex(x => x.VehicleId);
-            e.HasIndex(x => x.RouteId);
-            e.HasIndex(x => x.Status);
+            e.HasOne(x => x.PickupAddress)
+                .WithMany()
+                .HasForeignKey(x => x.PickupAddressId)
+                .OnDelete(DeleteBehavior.Restrict);
 
-            e.HasMany(x => x.ProofsOfDelivery)
-                .WithOne(x => x.Delivery)
-                .HasForeignKey(x => x.DeliveryId)
-                .OnDelete(DeleteBehavior.Cascade);
+            e.HasOne(x => x.DeliveryAddress)
+                .WithMany()
+                .HasForeignKey(x => x.DeliveryAddressId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         // =====================================================
-        // MEMBER 3 - PROOF OF DELIVERY
+        // Shipment Item
         // =====================================================
-        modelBuilder.Entity<ProofOfDelivery>(e =>
+
+        modelBuilder.Entity<ShipmentItem>(e =>
         {
             e.HasKey(x => x.Id);
 
-            e.Property(x => x.ReceiverName)
+            e.Property(x => x.ItemName)
                 .HasMaxLength(200)
                 .IsRequired();
 
-            e.Property(x => x.SignaturePath)
-                .HasMaxLength(500)
-                .IsRequired();
+            e.Property(x => x.Description)
+                .HasMaxLength(500);
 
-            e.Property(x => x.PhotoPath)
-                .HasMaxLength(500)
-                .IsRequired();
+            e.Property(x => x.WeightKg)
+                .HasPrecision(18, 2);
 
-            e.Property(x => x.Remarks)
-                .HasMaxLength(1000);
+            e.Property(x => x.LengthCm)
+                .HasPrecision(18, 2);
 
-            e.HasIndex(x => x.DeliveryId);
+            e.Property(x => x.WidthCm)
+                .HasPrecision(18, 2);
+
+            e.Property(x => x.HeightCm)
+                .HasPrecision(18, 2);
+
+            e.HasOne(x => x.Shipment)
+                .WithMany(x => x.ShipmentItems)
+                .HasForeignKey(x => x.ShipmentId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // =====================================================
-        // MEMBER 3 - SCHEDULE
+        // Shipment Tracking
         // =====================================================
-        modelBuilder.Entity<Schedule>(e =>
+
+        modelBuilder.Entity<ShipmentTracking>(e =>
         {
             e.HasKey(x => x.Id);
 
             e.Property(x => x.Status)
-                .HasConversion<int>();
+                .HasMaxLength(50)
+                .IsRequired();
 
-            e.HasIndex(x => x.ShipmentId);
-            e.HasIndex(x => x.DriverId);
-            e.HasIndex(x => x.VehicleId);
-            e.HasIndex(x => x.StartTimeUtc);
-            e.HasIndex(x => x.EndTimeUtc);
-            e.HasIndex(x => x.Status);
+            e.Property(x => x.Location)
+                .HasMaxLength(250);
+
+            e.Property(x => x.Latitude)
+                .HasPrecision(10, 7);
+
+            e.Property(x => x.Longitude)
+                .HasPrecision(10, 7);
+
+            e.Property(x => x.Remarks)
+                .HasMaxLength(500);
+
+            e.HasOne(x => x.Shipment)
+                .WithMany(x => x.TrackingHistory)
+                .HasForeignKey(x => x.ShipmentId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
 
         // =====================================================
-        // ROLE SEED DATA
+        // Warehouse
         // =====================================================
+
+        modelBuilder.Entity<Warehouse>(e =>
+        {
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.Name)
+                .HasMaxLength(200)
+                .IsRequired();
+
+            e.Property(x => x.Address)
+                .HasMaxLength(250)
+                .IsRequired();
+
+            e.Property(x => x.City)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            e.Property(x => x.State)
+                .HasMaxLength(100)
+                .IsRequired();
+
+            e.Property(x => x.PostalCode)
+                .HasMaxLength(20)
+                .IsRequired();
+
+            e.Property(x => x.CapacityKg)
+                .HasPrecision(18, 2);
+
+            e.Property(x => x.UsedCapacityKg)
+                .HasPrecision(18, 2);
+
+            e.Property(x => x.Status)
+                .HasMaxLength(50)
+                .IsRequired();
+        });
+
+        // =====================================================
+        // Warehouse Shipment
+        // =====================================================
+
+        modelBuilder.Entity<WarehouseShipment>(e =>
+        {
+            e.HasKey(x => x.Id);
+
+            e.Property(x => x.StorageLocation)
+                .HasMaxLength(100);
+
+            e.Property(x => x.Status)
+                .HasMaxLength(50)
+                .IsRequired();
+
+            e.HasOne(x => x.Warehouse)
+                .WithMany(x => x.WarehouseShipments)
+                .HasForeignKey(x => x.WarehouseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            e.HasOne(x => x.Shipment)
+                .WithMany(x => x.WarehouseShipments)
+                .HasForeignKey(x => x.ShipmentId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // =====================================================
+        // Role Seed Data
+        // =====================================================
+
         modelBuilder.Entity<Role>().HasData(
             new Role { Id = 1, Name = "Admin" },
             new Role { Id = 2, Name = "Logistics Staff" },
