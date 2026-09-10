@@ -22,6 +22,9 @@ public static class DependencyInjection
         services.AddScoped<ICustomerService, CustomerService>();
         services.AddScoped<IVehicleService, VehicleService>();
         services.AddScoped<IDriverService, DriverService>();
+        services.AddScoped<IRouteService, RouteService>();
+        services.AddScoped<IDeliveryService, DeliveryService>();
+        services.AddScoped<IScheduleService, ScheduleService>();
         return services;
     }
 }

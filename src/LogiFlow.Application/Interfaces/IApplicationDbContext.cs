@@ -12,5 +12,12 @@ public interface IApplicationDbContext
     DbSet<CustomerAddress> CustomerAddresses { get; }
     DbSet<Vehicle> Vehicles { get; }
     DbSet<Driver> Drivers { get; }
+
+    DbSet<Route> Routes { get; }
+    DbSet<RouteStop> RouteStops { get; }
+    DbSet<Delivery> Deliveries { get; }
+    DbSet<ProofOfDelivery> ProofsOfDelivery { get; }
+    DbSet<Schedule> Schedules { get; }
+
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
