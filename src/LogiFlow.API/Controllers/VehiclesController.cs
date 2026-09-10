@@ -1,3 +1,4 @@
+using LogiFlow.Application.DTOs.Schedules;
 using LogiFlow.Application.DTOs.Vehicles;
 using LogiFlow.Application.Interfaces;
 using LogiFlow.Domain.Constants;
@@ -22,4 +23,12 @@ public class VehiclesController(IVehicleService service) : ControllerBase
     [HttpPut("{id:int}")] public async Task<ActionResult<VehicleResponse>> Update(int id, UpdateVehicleRequest request, CancellationToken ct) => Ok(await service.UpdateAsync(id, request, ct));
     [HttpDelete("{id:int}")] public async Task<IActionResult> Delete(int id, CancellationToken ct) { await service.DeleteAsync(id, ct); return NoContent(); }
     [HttpPatch("{id:int}/status")] public async Task<ActionResult<VehicleResponse>> Status(int id, UpdateVehicleStatusRequest request, CancellationToken ct) => Ok(await service.UpdateStatusAsync(id, request, ct));
+    [HttpGet("{id:int}/schedule")]
+    public async Task<ActionResult<IReadOnlyCollection<ScheduleResponse>>>
+        GetSchedule(
+            int id,
+            [FromServices] IScheduleService scheduleService,
+            CancellationToken ct) =>
+        Ok(await scheduleService.GetVehicleScheduleAsync(id, ct));
 }
+
