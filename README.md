@@ -1,6 +1,6 @@
 # LogiFlow — Integrated Logistics & Delivery Management System
 
-Complete backend assembled from the supplied team work and extended with **Member 4 (M10-M12)**.
+Complete backend assembled from the supplied team work.
 
 ## Technology
 - ASP.NET Core Web API / .NET 8
